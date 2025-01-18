@@ -4,8 +4,83 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Clicker Game</title>
-    <script src="https://cdn.tailwindcss.com"></script>
     <style>
+        /* Custom CSS to replace Tailwind classes */
+        body {
+            background-color: #1a202c;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+        .game-container {
+            width: 100%;
+            max-width: 24rem;
+            background-size: cover;
+            background-position: center;
+            border-radius: 0.75rem;
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+        .game-overlay {
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 1.5rem;
+        }
+        .text-center {
+            text-align: center;
+        }
+        .text-white {
+            color: white;
+        }
+        .mb-4 {
+            margin-bottom: 1rem;
+        }
+        .text-2xl {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        .text-xl {
+            font-size: 1.25rem;
+        }
+        .text-lg {
+            font-size: 1.125rem;
+        }
+        .flex-center {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 1rem;
+        }
+        .button-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+        .btn {
+            padding: 0.5rem;
+            border-radius: 0.25rem;
+            color: white;
+            transition: all 0.3s ease;
+        }
+        .btn-green {
+            background-color: #48bb78;
+        }
+        .btn-blue {
+            background-color: #4299e1;
+        }
+        .btn:hover {
+            opacity: 0.9;
+        }
+        .character-btn {
+            transition: transform 0.2s;
+        }
+        .character-btn:hover {
+            transform: scale(1.05);
+        }
+        .character-btn:active {
+            transform: scale(0.95);
+        }
         @keyframes pulse {
             0% { transform: scale(1); }
             50% { transform: scale(1.05); }
@@ -17,27 +92,26 @@
         }
     </style>
 </head>
-<body class="bg-gray-900 flex items-center justify-center h-screen">
-    <div class="w-full max-w-md bg-cover bg-center rounded-xl overflow-hidden shadow-2xl" 
-         style="background-image: url('background.png');">
-        <div class="bg-black/50 p-6">
+<body>
+    <div class="game-container" style="background-image: url('game_background.jpg');">
+        <div class="game-overlay">
             <div class="text-center text-white mb-4">
-                <h1 class="text-2xl font-bold">Crypto Clicker</h1>
+                <h1 class="text-2xl">Crypto Clicker</h1>
                 <p id="coinDisplay" class="text-xl mt-2">Coins: 0</p>
                 <p id="energyDisplay" class="text-lg">Energy: 100/100</p>
             </div>
 
-            <div class="relative flex justify-center mb-4">
-                <button id="clickButton" class="transform transition-transform hover:scale-105 active:scale-95">
-                    <img src="cat.png" alt="Click Character" class="w-64 h-64 object-contain">
+            <div class="flex-center">
+                <button id="clickButton" class="character-btn">
+                    <img src="character.png" alt="Click Character" style="width: 16rem; height: 16rem; object-fit: contain;">
                 </button>
             </div>
 
-            <div class="grid grid-cols-2 gap-4">
-                <button id="upgradeButton" class="bg-green-500 text-white p-2 rounded transition-all">
+            <div class="button-grid">
+                <button id="upgradeButton" class="btn btn-green">
                     Upgrade (Cost: 10)
                 </button>
-                <button id="restoreEnergyButton" class="bg-blue-500 text-white p-2 rounded transition-all">
+                <button id="restoreEnergyButton" class="btn btn-blue">
                     Restore Energy (Cost: 20)
                 </button>
             </div>
@@ -139,7 +213,7 @@
             if (gameState.coins >= gameState.energyRestoreCost) {
                 gameState.coins -= gameState.energyRestoreCost;
                 gameState.energy = gameState.maxEnergy;
-                gameState.energyRestoreCost = Math.ceil(gameState.energyRestoreCost * 1.2);
+                gameState. energyRestoreCost = Math.ceil(gameState.energyRestoreCost * 1.2);
                 updateDisplay();
             } else {
                 showButtonError(restoreEnergyButton, `Restore Energy (Cost: ${gameState.energyRestoreCost})`);
