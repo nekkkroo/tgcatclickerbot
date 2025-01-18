@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clicker Game</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        .pulse-error {
+            animation: pulse 1s infinite;
+            background-color: #ff4444 !important;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 flex items-center justify-center h-screen">
+    <div class="w-full max-w-md bg-cover bg-center rounded-xl overflow-hidden shadow-2xl" 
+         style="background-image: url('background.png');">
+        <div class="bg-black/50 p-6">
+            <div class="text-center text-white mb-4">
+                <h1 class="text-2xl font-bold">Crypto Clicker</h1>
+                <p id="coinDisplay" class="text-xl mt-2">Coins: 0</p>
+                <p id="energyDisplay" class="text-lg">Energy: 100/100</p>
+            </div>
+
+            <div class="relative flex justify-center mb-4">
+                <button id="clickButton" class="transform transition-transform hover:scale-105 active:scale-95">
+                    <img src="cat.png" alt="Click Character" class="w-64 h-64 object-contain">
+                </button>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <button id="upgradeButton" class="bg-green-500 text-white p-2 rounded transition-all">
+                    Upgrade (Cost: 10)
+                </button>
+                <button id="restoreEnergyButton" class="bg-blue-500 text-white p-2 rounded transition-all">
+                    Restore Energy (Cost: 20)
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Persistent game state with enhanced saving
+        const gameState = {
+            get coins() {
+                return parseInt(localStorage.getItem('coins') || '0');
+            },
+            set coins(value) {
+                localStorage.setItem('coins', value.toString());
+            },
+            get energy() {
+                return parseInt(localStorage.getItem('energy') || '100');
+            },
+            set energy(value) {
+                localStorage.setItem('energy', value.toString());
+            },
+            get clickPower() {
+                return parseInt(localStorage.getItem('clickPower') || '1');
+            },
+            set clickPower(value) {
+                localStorage.setItem('clickPower', value.toString());
+            },
+            get upgradeCost() {
+                return parseInt(localStorage.getItem('upgradeCost') || '10');
+            },
+            set upgradeCost(value) {
+                localStorage.setItem('upgradeCost', value.toString());
+            },
+            get energyRestoreCost() {
+                return parseInt(localStorage.getItem('energyRestoreCost') || '20');
+            },
+            set energyRestoreCost(value) {
+                localStorage.setItem('energyRestoreCost', value.toString());
+            },
+            maxEnergy: 100
+        };
+
+        // DOM Elements
+        const coinDisplay = document.getElementById('coinDisplay');
+        const energyDisplay = document.getElementById('energyDisplay');
+        const clickButton = document.getElementById('clickButton');
+        const upgradeButton = document.getElementById('upgradeButton');
+        const restoreEnergyButton = document.getElementById('restoreEnergyButton');
+
+        // Update display
+        function updateDisplay() {
+            coinDisplay.textContent = `Coins: ${gameState.coins}`;
+            energyDisplay.textContent = `Energy: ${gameState.energy}/${gameState.maxEnergy}`;
+            upgradeButton.textContent = `Upgrade (Cost: ${gameState.upgradeCost})`;
+            restoreEnergyButton.textContent = `Restore Energy (Cost: ${gameState.energyRestoreCost})`;
+        }
+
+        // Error state for buttons
+        function showButtonError(button, originalText) {
+            button.classList.add('pulse-error');
+            button.textContent = 'Not Enough Money';
+            
+            setTimeout(() => {
+                button.classList.remove('pulse-error');
+                button.textContent = originalText;
+            }, 2000);
+        }
+
+        // Click handler
+        clickButton.addEventListener('click', () => {
+            if (gameState.energy > 0) {
+                gameState.coins += gameState.clickPower;
+                gameState.energy--;
+                updateDisplay();
+            } else {
+                restoreEnergyButton.classList.add('pulse-error');
+                restoreEnergyButton.textContent = 'Need Energy!';
+                setTimeout(() => {
+                    restoreEnergyButton.classList.remove('pulse-error');
+                    restoreEnergyButton.textContent = `Restore Energy (Cost: ${gameState.energyRestoreCost})`;
+                }, 2000);
+            }
+        });
+
+        // Upgrade handler
+        upgradeButton.addEventListener('click', () => {
+            if (gameState.coins >= gameState.upgradeCost) {
+                gameState.coins -= gameState.upgradeCost;
+                gameState.clickPower++;
+                gameState.upgradeCost = Math.ceil(gameState.upgradeCost * 1.5);
+                updateDisplay();
+            } else {
+                showButtonError(upgradeButton, `Upgrade (Cost: ${gameState.upgradeCost})`);
+            }
+        });
+
+        // Restore energy handler
+        restoreEnergyButton.addEventListener('click', () => {
+            if (gameState.coins >= gameState.energyRestoreCost) {
+                gameState.coins -= gameState.energyRestoreCost;
+                gameState.energy = gameState.maxEnergy;
+                gameState.energyRestoreCost = Math.ceil(gameState.energyRestoreCost * 1.2);
+                updateDisplay();
+            } else {
+                showButtonError(restoreEnergyButton, `Restore Energy (Cost: ${gameState.energyRestoreCost})`);
+            }
+        });
+
+        // Initial display update
+        updateDisplay();
+    </script>
+</body>
+</html>
